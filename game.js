@@ -1,8 +1,8 @@
-import { score, isWin, isValidGuess, normalize, wordForDay, WORDS } from "./logic.js";
+import { score, isWin, isValidGuess, normalize, wordForDay, dayIndex, WORDS } from "./logic.js";
 
 const ROWS = 6;
 const LEN = 5;
-const answer = wordForDay(WORDS, Math.floor(Date.now() / 86_400_000));
+const answer = wordForDay(WORDS, dayIndex());
 
 const boardEl = document.getElementById("board");
 const msgEl = document.getElementById("msg");
@@ -100,6 +100,7 @@ function flash(text) {
 
 function handle(key) {
   if (done) return;
+  if (key !== "enter") flash(""); // any message while playing is an error; clear on edit
   if (key === "enter") return submit();
   if (key === "back") return ((current = current.slice(0, -1)), renderCurrent());
   if (/^[a-z]$/.test(key) && current.length < LEN) {
