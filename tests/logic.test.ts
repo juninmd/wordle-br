@@ -1,5 +1,5 @@
 import { test, expect } from "bun:test";
-import { normalize, score, isWin, isValidGuess, wordForDay, WORDS } from "../logic.js";
+import { normalize, score, isWin, isValidGuess, wordForDay, dayIndex, WORDS } from "../logic.js";
 
 test("normalize strips accents and case", () => {
   expect(normalize("Avião")).toBe("aviao");
@@ -52,4 +52,16 @@ test("wordForDay is deterministic and wraps", () => {
 
 test("every embedded word normalizes to 5 letters", () => {
   for (const w of WORDS) expect(normalize(w).length).toBe(5);
+});
+
+test("dayIndex follows the Sao Paulo calendar day, not UTC", () => {
+  const late = dayIndex(new Date("2026-03-10T23:30:00-03:00"));
+  const early = dayIndex(new Date("2026-03-10T00:30:00-03:00"));
+  expect(late).toBe(early);
+  expect(dayIndex(new Date("2026-03-11T00:00:00-03:00"))).toBe(dayIndex(new Date("2026-03-10T23:59:59-03:00")) + 1);
+});
+
+test("dayIndex honors an explicit timezone", () => {
+  const t = new Date("2026-03-10T23:30:00-03:00"); // 02:30 UTC on the 11th
+  expect(dayIndex(t, "UTC")).toBe(dayIndex(t) + 1);
 });

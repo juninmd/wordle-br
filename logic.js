@@ -44,6 +44,17 @@ export function wordForDay(words, dayIndex) {
   return words[((dayIndex % words.length) + words.length) % words.length];
 }
 
+/**
+ * Days since the epoch for the calendar date in `tz` (default Brasilia), so the
+ * daily word flips at local midnight instead of 21:00 (UTC midnight).
+ */
+export function dayIndex(now = new Date(), tz = "America/Sao_Paulo") {
+  const parts = new Intl.DateTimeFormat("en-CA", { timeZone: tz, year: "numeric", month: "2-digit", day: "2-digit" })
+    .formatToParts(now);
+  const n = (type) => Number(parts.find((p) => p.type === type).value);
+  return Math.floor(Date.UTC(n("year"), n("month") - 1, n("day")) / 86_400_000);
+}
+
 // Common Portuguese words that are exactly 5 letters once accents are stripped
 // (display forms shown to the player; comparison is accent-insensitive).
 export const WORDS = [
